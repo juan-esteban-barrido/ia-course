@@ -1,0 +1,59 @@
+.container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+
+    &__chat {
+        height: 600px;
+        width: 700px;
+        background-color: gainsboro;
+        overflow-y: scroll;
+        display: flex;
+        flex-direction: column;
+
+        &__message {
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: white;
+            width: fit-content;
+            max-width: 60%;
+        }
+    }
+
+    &__controls {
+        margin-top: 10px;
+        display: flex;
+        gap: 10px;
+
+        input {
+            width: 600px;
+            height: 30px;
+            font-size: 16px;
+            padding: 5px;
+        }
+
+        button {
+            width: 80px;
+            height: 40px;
+            font-size: 16px;
+            cursor: pointer;
+            background: yellowgreen;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+
+            &:disabled {
+                background: gray;
+                cursor: not-allowed;
+            }
+        }
+    }
+
+    .user {
+        align-self: flex-end;
+        background-color: lightgreen;
+    }
+}

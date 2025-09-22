@@ -1,0 +1,16 @@
+<div class="container">
+  <h1>Cinebot</h1>
+  <div class="container__chat" #chatContainer>
+    <ng-container *ngFor="let message of messages">
+      <div [ngClass]="message.by === 'user' ? 'container__chat__message user' : 'container__chat__message'">
+        {{message.by}}:
+        {{message.message}}
+      </div>
+    </ng-container>
+  </div>
+  <div class="container__controls">
+
+    <input type="text" [formControl]="messageForm" (keydown.enter)="sendMessage()">
+    <button [disabled]="!canSendMessage" (click)="sendMessage()">Send</button>
+  </div>
+</div>
