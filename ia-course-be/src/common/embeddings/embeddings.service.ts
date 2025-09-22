@@ -101,8 +101,8 @@ export class EmbeddingService implements OnModuleInit {
     const voyageModel = this.config.get<string>('VOYAGE_EMBEDDING_MODEL') || '';
 
     if (!voyageKey) {
-      this.logger.error('VOYAGE_API_KEY no está configurada');
-      throw new Error('VOYAGE_API_KEY no está configurada');
+      this.logger.error('missing VOYAGE_API_KEY');
+      throw new Error('missing VOYAGE_API_KEY ');
     }
 
     try {
@@ -138,7 +138,7 @@ export class EmbeddingService implements OnModuleInit {
       const textModel = this.config.get<string>('GEMINI_TEXT_MODEL') || 'gemini-2.0-flash';
 
       if (!apiKey) {
-        throw new Error('GEMINI_API_KEY no está configurada');
+        throw new Error('missing GEMINI_API_KEY');
       }
 
       this.genAI = new GoogleGenerativeAI(apiKey);
