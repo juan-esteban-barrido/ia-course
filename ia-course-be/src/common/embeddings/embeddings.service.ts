@@ -40,12 +40,13 @@ export class EmbeddingService implements OnModuleInit {
     return embedding as any;
   }
 
+  //Saves embedding in our database linked to the movie or text.
   async createEmbeddingForData(movie: Movie): Promise<Embedding> {
     try {
       const embeddingValue = await this.generateEmbedding(movie.fullplot);
       const value: Embedding = {
         embedding: embeddingValue,
-        content: movie?._id || movie.plot,
+        content: movie?._id || movie.fullplot,
         metadata: movie,
         category: movie.genres?.[0] || 'unknown',
       }
