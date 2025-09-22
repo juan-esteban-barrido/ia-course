@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, Logger } from '@nestjs/common';
-import { TextService } from '../common/text/text.service'; // 👈 Nuevo servicio dedicado
+import { TextService } from '../common/text/text.service';
 import { EmbeddingService } from '../common/embeddings/embeddings.service';
 import { ConfigService } from '@nestjs/config';
 import { RulesService } from 'src/common/rules/rules.service';
@@ -105,8 +105,10 @@ Important instructions:
 10. Format any date as "DD of MMMM of YYYY" (example: "October 5, 2023").
 11. Present information from matches in natural language, as if you were personally telling it to the user.
 12. Show the match score got in contexts when mentioning a movie or series, to indicate how relevant it is to the user's query.
-13. Only show the JSON with the movie details when explicitly asked for it by the user.
+13. Always mention all the data that you receive about the movie or TV show
+14. Only show the JSON with the movie details when explicitly asked for it by the user.
 Answer:
+15. Always offer if the users wants the movie or series in JSON format.
 `.trim();
 
   }
