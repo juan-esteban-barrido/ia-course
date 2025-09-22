@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { ChatService } from './services/chat.service';
 import { take } from 'rxjs'
 
@@ -15,8 +15,6 @@ export interface Message {
 })
 export class AppComponent implements AfterViewChecked {
   @ViewChild('chatContainer') private chatContainer!: ElementRef;
-  
-  title = 'ia-course-fe';
   messageForm = new FormControl('');
   messages: Message[] = [];
   canSendMessage = true;
@@ -31,16 +29,8 @@ export class AppComponent implements AfterViewChecked {
     }
   }
 
-  private scrollToBottom(): void {
-    try {
-      this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
-    } catch(err) {
-      console.error('Error scrolling to bottom:', err);
-    }
-  }
-
   sendMessage(): void {
-    if(!this.canSendMessage) {
+    if (!this.canSendMessage) {
       return;
     }
     const message = this.messageForm.value || '';
@@ -51,17 +41,29 @@ export class AppComponent implements AfterViewChecked {
       message
     });
     this.shouldScrollToBottom = true;
-    
+
     this.messageForm.setValue('');
     this._chatService.sendMessage(message).pipe(take(1)).subscribe(data => {
       if (data.response) {
-        this.messages.push({
-          by: 'bot',
-          message: data.response
-        });
-        this.shouldScrollToBottom = true;
-        this.canSendMessage = true;
+        this.handleResponse(data.response);
       }
     })
+  }
+
+  private handleResponse(response: string): void {
+    this.messages.push({
+      by: 'bot',
+      message: response
+    });
+    this.shouldScrollToBottom = true;
+    this.canSendMessage = true;
+  }
+
+  private scrollToBottom(): void {
+    try {
+      this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
+    } catch (err) {
+      console.error('Error scrolling to bottom:', err);
+    }
   }
 }

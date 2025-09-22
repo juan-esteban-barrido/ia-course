@@ -3,7 +3,6 @@
   <div class="container__chat" #chatContainer>
     <ng-container *ngFor="let message of messages">
       <div [ngClass]="message.by === 'user' ? 'container__chat__message user' : 'container__chat__message'">
-        {{message.by}}:
         {{message.message}}
       </div>
     </ng-container>
