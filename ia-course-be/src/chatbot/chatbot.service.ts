@@ -67,6 +67,7 @@ export class ChatbotService {
     return response.trim();
   }
 
+  //This function decides if we should use retrieval based on the user query.
   private shouldUseRetrieval(query: string): boolean {
     if (!query || query.trim().length === 0) return false;
     const trimmed = query.trim();
