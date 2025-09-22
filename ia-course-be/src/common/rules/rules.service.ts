@@ -16,7 +16,7 @@ export class RulesService {
     private embeddingModel: Model<Embedding>,
     @Inject(forwardRef(() => EmbeddingService))
     private readonly _embeddingService: EmbeddingService
-  ) {}
+  ) { }
 
   async getAllMovies(): Promise<any[]> {
     try {
@@ -28,6 +28,8 @@ export class RulesService {
     }
   }
 
+  //Find movies by their IDs (as strings).
+  // This is used after retrieving nearest embeddings to get full movie details.
   async findMoviesByQueries(queries: string[], limit: number = 50): Promise<any[]> {
     try {
       if (!Array.isArray(queries) || queries.length === 0) return [];
@@ -52,54 +54,52 @@ export class RulesService {
       await this._embeddingService.createEmbeddingForData(newMovie);
       console.log('Movie created and embedded successfully:', newMovie);
       return newMovie.save();
-    } catch (error) { 
+    } catch (error) {
       throw new Error(`Error creating movie: ${error.message}`);
     }
   }
 
   async getNearestMoviesByEmbedding(
-  queryEmbedding: any,
-  field: string = 'embedding',
-  limit: number = 10,
-): Promise<any[]> {
-  try {
-    // Build pipeline using the normalized `queryVector` and the provided `field` and `limit`.
-
-    const pipeline = [
-      {
-        $vectorSearch: {
-          index: 'vector_index',
-          path: field,
-          queryVector: queryEmbedding,
-          numCandidates: 10,
-          limit: limit,
+    queryEmbedding: any,
+    field: string = 'embedding',
+    limit: number = 10,
+  ): Promise<any[]> {
+    try {
+      const pipeline = [
+        {
+          $vectorSearch: {
+            index: 'vector_index',
+            path: field,
+            queryVector: queryEmbedding,
+            numCandidates: 10,
+            limit: limit,
+          },
         },
-      },
-      {
-        $project: {
-          content: 1,
-          score: { $meta: 'vectorSearchScore' },
+        {
+          $project: {
+            content: 1,
+            score: { $meta: 'vectorSearchScore' },
+          },
         },
-      },
-      {
-        $lookup: {
-          from: 'movies',
-          localField: 'content',
-          foreignField: '_id',
-          as: 'movie',
+        {
+          $lookup: {
+            from: 'movies',
+            localField: 'content',
+            foreignField: '_id',
+            as: 'movie',
+          },
         },
-      },
-      {
-        $unwind: { path: '$movie', preserveNullAndEmptyArrays: true },
-      },
-    ];
+        {
+          $unwind: { path: '$movie', preserveNullAndEmptyArrays: true },
+        },
+      ];
 
-    const finalValue = await this.embeddingModel.aggregate(pipeline).exec();
+      const finalValue = await this.embeddingModel.aggregate(pipeline).exec();
 
-    return finalValue;
-  } catch (error) {
-    console.error('Error en getNearestMoviesByEmbeddingAtlas:', error);
-    return [];
-  }
+      return finalValue;
+    } catch (error) {
+      console.error('Error en getNearestMoviesByEmbeddingAtlas:', error);
+      return [];
+    }
   }
 }
