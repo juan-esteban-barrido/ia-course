@@ -58,7 +58,6 @@ export class TextService {
     }
   }
 
-  // --- Message history helpers ---
   addMessage(role: 'user' | 'assistant', text: string) {
     this.messageHistory.push({ role, text, ts: Date.now() });
     // keep at most maxHistory messages

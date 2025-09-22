@@ -27,21 +27,22 @@ export class ChatbotService {
     // Record user message in history
     this.textService.addMessage('user', userQuery);
     let matches = [];
-    //Generate embedding for vector search
-    if(userQuery.includes('search')) {
+    // Decide if we should use retrieval
+    const useRetrieval = this.shouldUseRetrieval(userQuery);
+    if (useRetrieval) {
       try {
         const queryEmbedding = await this.embeddingService.generateEmbedding(
           userQuery,
         );
-        
-        //Vector search
+
+        // Vector search
         matches = await this.rulesService.getNearestMoviesByEmbedding(
           queryEmbedding,
           'embedding',
         );
-        this.logger.log('Matches found:', matches)
-      } catch {
-        this.logger.error('Error generating embedding or during vector search. Skipping context retrieval.');
+        this.logger.log('Matches found:', matches);
+      } catch (err) {
+        this.logger.error('Error generating embedding or during vector search. Skipping context retrieval.', err?.message ?? err);
       }
     }
 
@@ -49,8 +50,8 @@ export class ChatbotService {
     const historyText = this.textService.formatHistory(5);
     let prompt = '';
 
-    //Only make vector search if user query includes 'search'
-    if(userQuery.includes('search')) {
+    // If retrieval used, include the retrieved contexts
+    if (useRetrieval) {
       const moviesIds: string[] = matches.map(m => m.content);
       const foundMovies = await this.rulesService.findMoviesByQueries(moviesIds);
       const moviesMapped = this.setScoreOnMovie(foundMovies, matches);
@@ -64,6 +65,17 @@ export class ChatbotService {
     this.textService.addMessage('assistant', response);
 
     return response.trim();
+  }
+
+  private shouldUseRetrieval(query: string): boolean {
+    if (!query || query.trim().length === 0) return false;
+    const trimmed = query.trim();
+    if (trimmed.length > 20) return true;
+    const qWords = /\b(what|who|when|where|why|how|recommend|suggest|plot|cast|director|rating)\b/i;
+    if (qWords.test(trimmed)) return true;
+    const retrievalTerms = /\b(search|find|lookup|recommendation)\b/i;
+    if (retrievalTerms.test(trimmed)) return true;
+    return false;
   }
 
   private buildPrompt(

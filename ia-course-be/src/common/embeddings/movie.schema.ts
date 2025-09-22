@@ -47,7 +47,6 @@ export class Movie {
   @Prop()
   writers: string[];
 
-  // Define awards as a nested object with explicit schema
   @Prop({
     type: {
       wins: Number,
@@ -68,7 +67,6 @@ export class Movie {
   @Prop()
   year: number;
 
-  // Define imdb as a nested object with explicit schema
   @Prop({
     type: {
       rating: Number,
@@ -89,7 +87,6 @@ export class Movie {
   @Prop()
   type: string;
 
-  // Define tomatoes as a nested object with explicit schema
   @Prop({
     type: {
       viewer: {
@@ -118,6 +115,5 @@ export class Movie {
 export type MovieDocument = Movie & Document;
 export const MovieSchema = SchemaFactory.createForClass(Movie);
 
-// Ensure unique imdb id and title+year combination at the DB level
 MovieSchema.index({ 'imdb.id': 1 }, { unique: true, sparse: true });
 MovieSchema.index({ title: 1, year: 1 }, { unique: true, sparse: true });
