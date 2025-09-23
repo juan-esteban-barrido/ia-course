@@ -123,6 +123,8 @@ Important instructions:
 14. Only show the JSON with the movie details when explicitly asked for it by the user.
 Answer:
 15. Always offer if the users wants the movie or series in JSON format.
+16. Always If the match score < 0.75 make the user knows that the match is very weak and may not be relevant.
+17. If the match score is 0.75 or higher, make the user knows it is a strong match.
 `.trim();
 
   }
