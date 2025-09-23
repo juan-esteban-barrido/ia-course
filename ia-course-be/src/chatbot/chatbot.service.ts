@@ -28,6 +28,7 @@ export class ChatbotService {
     this.textService.addMessage('user', userQuery);
     let matches = [];
     // Decide if we should use retrieval
+    //TODO: The ai will generate the query and decide if it is needed or not.
     const useRetrieval = this.shouldUseRetrieval(userQuery);
     if (useRetrieval) {
       try {
