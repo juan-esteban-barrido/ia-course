@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -11,7 +11,7 @@ import { firstValueFrom } from 'rxjs';
 import { Embedding } from 'src/common/embeddings/embedding.schema';
 
 @Injectable()
-export class EmbeddingService implements OnModuleInit {
+export class EmbeddingService {
   private readonly logger = new Logger(EmbeddingService.name);
   private genAI: GoogleGenerativeAI;
   private embeddingModel: GenerativeModel;
@@ -22,10 +22,6 @@ export class EmbeddingService implements OnModuleInit {
     private readonly httpService: HttpService,
     @InjectModel(Embedding.name) private readonly embeddedMovieModel: Model<any>,
   ) { }
-
-  async onModuleInit() {
-    await this.initializeModels();
-  }
 
   async generateEmbedding(text: string): Promise<number[]> {
     const embeddingAgent = (this.config.get<string>('DEFUALT_EMBEDDING_AGENT') || 'voyage').toLocaleLowerCase();
@@ -61,26 +57,6 @@ export class EmbeddingService implements OnModuleInit {
     const saveValue = await this.embeddedMovieModel.create(value);
     saveValue.save();
     return saveValue;
-  }
-
-  async generateText(prompt: string, temperature: number = 0.7): Promise<string> {
-    try {
-      // Configure max temperature for variability in responses
-      this.textModel.generationConfig.temperature = temperature;
-
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Timeout after 30s')), 30000)
-      );
-
-      const textPromise = this.textModel.generateContent(prompt);
-      const result = await Promise.race([textPromise, timeoutPromise]);
-      const response = await result.response;
-
-      return response.text();
-
-    } catch (error) {
-      this.logger.error('Error generating text:', error.message);
-    }
   }
 
   async handleEmbeddingGemini(text: string): Promise<any> {
@@ -129,40 +105,6 @@ export class EmbeddingService implements OnModuleInit {
 
       this.logger.error(`Voyage embedding request failed (status=${status}) - ${data ? JSON.stringify(data) : error.message}`);
       throw error;
-    }
-  }
-
-  private async initializeModels() {
-    try {
-      const apiKey = this.config.get<string>('GEMINI_API_KEY');
-      const textModel = this.config.get<string>('GEMINI_TEXT_MODEL') || 'gemini-2.0-flash';
-
-      if (!apiKey) {
-        throw new Error('missing GEMINI_API_KEY');
-      }
-
-      this.genAI = new GoogleGenerativeAI(apiKey);
-
-      if (!this.genAI) {
-        throw new Error('genAI failed');
-      }
-
-      // Text model configuration
-      this.textModel = this.genAI.getGenerativeModel({
-        model: textModel,
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 1000,
-        },
-      });
-
-      if (!this.textModel) {
-        throw new Error('genAI embeddingModelName');
-      }
-      this.logger.log('✅ Connected with Gemini');
-
-    } catch (error) {
-      this.logger.error('❌ Error starting Gemini:', error.message);
     }
   }
 }

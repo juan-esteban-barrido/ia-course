@@ -41,11 +41,10 @@ export class TextService {
       this.config.get<string>('CHATBOT_NAME') || 'El maestro de las pelis';
   }
 
-  async generateText(prompt: string, temperature?: number): Promise<string> {
+  async generateText(prompt: string): Promise<string> {
     try {
-      if (temperature !== undefined) {
-        this.textModel.generationConfig.temperature = temperature;
-      }
+      const temperature = parseFloat(this.config.get<string>('GEMINI_TEXT_TEMPERATURE') || '0.7');
+      this.textModel.generationConfig.temperature = temperature;
 
       const result = await this.textModel.generateContent(prompt);
       return result.response.text();

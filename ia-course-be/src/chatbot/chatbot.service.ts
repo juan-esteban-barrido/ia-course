@@ -22,7 +22,6 @@ export class ChatbotService {
 
   async generateResponse(
     userQuery: string,
-    temperature = 0.7,
   ): Promise<string> {
     // Record user message in history
     this.textService.addMessage('user', userQuery);
@@ -62,7 +61,7 @@ export class ChatbotService {
     }
 
     this.logger.debug(`Prompt sended:\n${prompt}`);
-    const response = await this.textService.generateText(prompt, temperature);
+    const response = await this.textService.generateText(prompt);
     this.textService.addMessage('assistant', response);
 
     return response.trim();

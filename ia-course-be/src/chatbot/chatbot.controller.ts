@@ -14,10 +14,8 @@ export class ChatbotController {
   @Post('message')
   async sendMessage(
     @Body('message') message: string,
-    @Body('temperature') temperature?: number,
   ): Promise<{ response: string }> {
-    const temp = temperature !== undefined ? temperature : 0.7;
-    const response = await this.chatbotService.generateResponse(message, temp);
+    const response = await this.chatbotService.generateResponse(message);
     return { response };
   }
 
