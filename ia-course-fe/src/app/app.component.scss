@@ -27,11 +27,12 @@
         display: flex;
         gap: 10px;
 
-        input {
+        textarea {
             width: 600px;
             height: 30px;
             font-size: 16px;
             padding: 5px;
+            resize: none;
         }
 
         button {

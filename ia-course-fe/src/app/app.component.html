@@ -8,8 +8,7 @@
     </ng-container>
   </div>
   <div class="container__controls">
-
-    <input type="text" [formControl]="messageForm" (keydown.enter)="sendMessage()">
-    <button [disabled]="!canSendMessage" (click)="sendMessage()">Send</button>
+    <textarea [formControl]="messageForm" (keydown.enter)="sendMessage()"></textarea>
+    <button [disabled]="!canSendMessage || !messageForm.value?.trim()?.length" (click)="sendMessage()">Send</button>
   </div>
 </div>

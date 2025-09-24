@@ -30,7 +30,7 @@ export class AppComponent implements AfterViewChecked {
   }
 
   sendMessage(): void {
-    if (!this.canSendMessage) {
+    if (!this.canSendMessage || !this.messageForm.value?.trim().length) {
       return;
     }
     const message = this.messageForm.value || '';
